@@ -2,8 +2,8 @@
 title: Analysis of Methylprednisolone Pulse Therapy on COVID-19 ICU patients at Thu
   Duc City Hospital, Vietnam
 author: "Hoang Anh NGO"
-date: "10/24/2021"
-output: html_document
+date: "24-Oct-2021"
+output: github_document
 ---
 
 ```{r setup, include=FALSE}

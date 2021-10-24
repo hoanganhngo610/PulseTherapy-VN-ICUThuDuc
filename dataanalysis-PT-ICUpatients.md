@@ -1,7 +1,7 @@
 Analysis of Methylprednisolone Pulse Therapy on COVID-19 ICU patients at Thu Duc City Hospital, Vietnam
 ================
 Hoang Anh NGO
-10/24/2021
+24-Oct-2021
 
 R Markdown
 ----------

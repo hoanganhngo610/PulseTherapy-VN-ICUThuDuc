@@ -1,31 +1,155 @@
 ---
-title: Analysis of Methylprednisolone Pulse Therapy on COVID-19 ICU patients at Thu
-  Duc City Hospital, Vietnam
+title: "Analysis of Methylprednisolone Pulse Therapy on COVID-19 ICU patients at Thu Duc City Hospital, Vietnam"
 author: "Hoang Anh NGO"
 date: "24-Oct-2021"
-output: github_document
+output: pdf_document
 ---
 
+## Setting up with library and dataset import
+
+```{r import-libraries, message=FALSE}
+# import necessary libraries
+library(BMA)
+library(compareGroups)
+library(dplyr)
+library(epiDisplay)
+library(ggplot2)
+library(gridExtra)
+library(logistf)
+library(Matching)
+library(pROC)
+library(tidyr)
+library(table1)
+library(knitr)
+library(ggplot2)
+```
+
+```{r import-dataset, message=FALSE}
+# import dataset
+newPS <- read.csv("./newPS.csv")
+```
+
+## Descriptive Statistics and Propensity Score
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# change categorical  columns to type factor
+newPS$hypertension <- as.factor(newPS$hypertension)
+newPS$Cardiovascular <- as.factor(newPS$Cardiovascular)
+newPS$Diabetes <- as.factor(newPS$Diabetes)
+newPS$Chronic <- as.factor(newPS$Chronic)
+newPS$Obesity <- as.factor(newPS$Obesity)
+newPS$Pregnancy <- as.factor(newPS$Pregnancy)
+newPS$Stroke <- as.factor(newPS$Stroke)
+newPS$Chronic_liver <- as.factor(newPS$Chronic_liver)
+newPS$chronic_renal <- as.factor(newPS$chronic_renal)
+newPS$cancer_HIV <- as.factor(newPS$cancer_HIV)
+newPS$data.PT <- as.factor(newPS$data.PT)
+newPS$sex <- as.factor(newPS$sex)
 ```
 
-## R Markdown
+```{r propensity-score, message=FALSE, warning=FALSE}
+# Calculate propensity score
+PSlogit <- glm(newPS$death ~ newPS$data.PT + newPS$sex + newPS$age + newPS$BMI + newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke + newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + newPS$SpO2 + newPS$Temp + newPS$Breathing, family=binomial, data = newPS)
+summary(PSlogit)
+logistic.display(PSlogit)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Formula = (newPS$data.PT==1) ~ newPS$sex + newPS$age + newPS$BMI + newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke + newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + newPS$SpO2 + newPS$Temp + newPS$Breathing + UD
+PSlogit1 <- glm(formula = Formula, family=binomial, data = newPS)
+summary(PSlogit1)
+logistic.display(PSlogit1)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+newPS$ps = predict(PSlogit1, type="response") 
 
-```{r cars}
-summary(cars)
+roc.PSlogit1 = roc(data.PT==1 ~ ps, data = newPS)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r plotting, message=FALSE, warning=FALSE}
+plot(roc.PSlogit1, legacy.axes = T)
+ggplot(data = newPS, aes(x = ps, 
+                         fill = factor(data.PT), 
+                         col = factor(data.PT))) + geom_density(alpha = 0.1)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r matching, message=FALSE, warning=FALSE}
+# Matching with respect to Propensity Score
+listMatch = Match(Tr = (newPS$data.PT==1), X=log(newPS$ps/(1- newPS$ps)), M=1, caliper=0.05, replace =FALSE, ties=TRUE, version="fast")
+
+MatchBalance(formul = Formula, data = newPS, match.out=listMatch)
+
+psMatch = newPS[unlist(listMatch[c("index.treated","index.control")]), ]
+
+table1(~ sex + age + BMI + UD + hypertension + Cardiovascular + Diabetes + Chronic + Obesity + Pregnancy + Stroke + Chronic_liver + chronic_renal + cancer_HIV + SpO2 + Temp + Breathing + UD|data.PT, data = psMatch)
+```
+
+## Bayesian Model Averaging and Logistics Regression
+
+```{r BMA, warning=FALSE}
+y = psMatch[,("death")]
+x = psMatch[,c("data.PT", "sex", "age", "BMI", "hypertension", "Cardiovascular", "Diabetes", "Chronic", "Obesity", "Pregnancy", "Stroke", "Chronic_liver", "chronic_renal", "cancer_HIV", "SpO2", "Temp", "Breathing", "UD")]
+bma = bicreg(x, y, strict=FALSE, OR=20)
+summary(bma)
+```
+ 
+```{r logistic-regression, message=FALSE, warning=FALSE}
+PSlogit5 <- glm(death ~ age, family=binomial, data = newPS)
+logistic.display(PSlogit5)
+
+PSlogit6 <- glm(death ~ data.PT, family=binomial, data = newPS)
+logistic.display(PSlogit6)
+
+PSlogit7 <- glm(death ~ sex, family=binomial, data = newPS)
+logistic.display(PSlogit7)
+
+PSlogit8 <- glm(death ~ SpO2, family=binomial, data = newPS)
+logistic.display(PSlogit8)
+
+PSlogit9 <- glm(death ~ UD, family=binomial, data = newPS)
+logistic.display(PSlogit9)
+
+PSlogit10 <- glm(death ~ cancer_HIV, family=binomial, data = newPS)
+logistic.display(PSlogit10)
+
+PSlogit11 <- glm(death ~ Chronic, family=binomial, data = newPS)
+logistic.display(PSlogit11)
+
+PSlogit12 <- glm(death ~ BMI, family=binomial, data = newPS)
+logistic.display(PSlogit12)
+
+PSlogit14 <- glm(death ~ Temp, family=binomial, data = newPS)
+logistic.display(PSlogit14)
+
+PSlogit15 <- glm(death ~ Breathing, family=binomial, data = newPS)
+logistic.display(PSlogit15)
+
+PSlogit16 <- glm(death ~ hypertension, family=binomial, data = newPS)
+logistic.display(PSlogit16)
+
+PSlogit17 <- glm(death ~ Cardiovascular, family=binomial, data = newPS)
+logistic.display(PSlogit17)
+
+PSlogit18 <- glm(death ~ Diabetes, family=binomial, data = newPS)
+logistic.display(PSlogit18)
+
+PSlogit19 <- glm(death ~ Obesity, family=binomial, data = newPS)
+logistic.display(PSlogit19)
+
+PSlogit20 <- glm(death ~ Pregnancy, family=binomial, data = newPS)
+logistic.display(PSlogit20)
+
+PSlogit21 <- glm(death ~ Stroke, family=binomial, data = newPS)
+logistic.display(PSlogit21)
+
+PSlogit22 <- glm(death ~ Chronic_liver, family=binomial, data = newPS)
+logistic.display(PSlogit22)
+
+PSlogit23 <- glm(death ~ chronic_renal, family=binomial, data = newPS)
+logistic.display(PSlogit23)
+
+model1 <- logistf(death ~ Chronic_liver, data = newPS)
+summary(model1)
+exp(model1$coef[2])
+
+model <- logistf(death ~ cancer_HIV, data = newPS)
+summary(model)
+exp(model$coef[2])
+```

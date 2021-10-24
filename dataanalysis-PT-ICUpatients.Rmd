@@ -1,9 +1,12 @@
 ---
 title: "Analysis of Methylprednisolone Pulse Therapy on COVID-19 ICU patients at Thu Duc City Hospital, Vietnam"
-author: "Hoang Anh NGO"
 date: "24-Oct-2021"
 output: pdf_document
 ---
+
+## Context
+
+This RMarkdown file serves as the analysis of the results provided in the manuscript "High dose methylprednisolone pulse therapy as a treatment for severe COVID-19 patients: results from a prospective observational study" of Nghia Thinh Bui et al. (2021).
 
 ## Setting up with library and dataset import
 
@@ -153,3 +156,7 @@ model <- logistf(death ~ cancer_HIV, data = newPS)
 summary(model)
 exp(model$coef[2])
 ```
+
+# Acknowledgement
+
+We would like to acknowledge Dr. Nguyen Thi Cam Binh and Ms. Tran Thi Thuan Duc for their contribution to this formal analysis of the dataset.

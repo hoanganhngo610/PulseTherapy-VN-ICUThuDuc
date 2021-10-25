@@ -52,11 +52,20 @@ newPS$sex <- as.factor(newPS$sex)
 
 ```{r propensity-score, message=FALSE, warning=FALSE}
 # Calculate propensity score
-PSlogit <- glm(newPS$death ~ newPS$data.PT + newPS$sex + newPS$age + newPS$BMI + newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke + newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + newPS$SpO2 + newPS$Temp + newPS$Breathing, family=binomial, data = newPS)
+PSlogit <- glm(newPS$death ~ newPS$data.PT + newPS$sex + newPS$age + newPS$BMI + 
+                 newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + 
+                 newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke +
+                 newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + 
+                 newPS$SpO2 + newPS$Temp + newPS$Breathing, family=binomial, data = newPS)
 summary(PSlogit)
 logistic.display(PSlogit)
 
-Formula = (newPS$data.PT==1) ~ newPS$sex + newPS$age + newPS$BMI + newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke + newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + newPS$SpO2 + newPS$Temp + newPS$Breathing + UD
+Formula = (newPS$data.PT==1) ~ newPS$sex + newPS$age + newPS$BMI + 
+  newPS$hypertension + newPS$Cardiovascular + newPS$Diabetes + 
+  newPS$Chronic + newPS$Obesity + newPS$Pregnancy + newPS$Stroke + 
+  newPS$Chronic_liver + newPS$chronic_renal + newPS$cancer_HIV + 
+  newPS$SpO2 + newPS$Temp + newPS$Breathing + UD
+
 PSlogit1 <- glm(formula = Formula, family=binomial, data = newPS)
 summary(PSlogit1)
 logistic.display(PSlogit1)
@@ -75,20 +84,25 @@ ggplot(data = newPS, aes(x = ps,
 
 ```{r matching, message=FALSE, warning=FALSE}
 # Matching with respect to Propensity Score
-listMatch = Match(Tr = (newPS$data.PT==1), X=log(newPS$ps/(1- newPS$ps)), M=1, caliper=0.05, replace =FALSE, ties=TRUE, version="fast")
+listMatch = Match(Tr = (newPS$data.PT==1), X=log(newPS$ps/(1- newPS$ps)), M=1,
+                  caliper=0.05, replace =FALSE, ties=TRUE, version="fast")
 
 MatchBalance(formul = Formula, data = newPS, match.out=listMatch)
 
 psMatch = newPS[unlist(listMatch[c("index.treated","index.control")]), ]
 
-table1(~ sex + age + BMI + UD + hypertension + Cardiovascular + Diabetes + Chronic + Obesity + Pregnancy + Stroke + Chronic_liver + chronic_renal + cancer_HIV + SpO2 + Temp + Breathing + UD|data.PT, data = psMatch)
+table1(~ sex + age + BMI + UD + hypertension + Cardiovascular + Diabetes + Chronic + 
+         Obesity + Pregnancy + Stroke + Chronic_liver + chronic_renal + cancer_HIV + 
+         SpO2 + Temp + Breathing + UD|data.PT, data = psMatch)
 ```
 
 ## Bayesian Model Averaging and Logistics Regression
 
 ```{r BMA, warning=FALSE}
 y = psMatch[,("death")]
-x = psMatch[,c("data.PT", "sex", "age", "BMI", "hypertension", "Cardiovascular", "Diabetes", "Chronic", "Obesity", "Pregnancy", "Stroke", "Chronic_liver", "chronic_renal", "cancer_HIV", "SpO2", "Temp", "Breathing", "UD")]
+x = psMatch[,c("data.PT", "sex", "age", "BMI", "hypertension", "Cardiovascular", 
+               "Diabetes", "Chronic", "Obesity", "Pregnancy", "Stroke", "Chronic_liver", 
+               "chronic_renal", "cancer_HIV", "SpO2", "Temp", "Breathing", "UD")]
 bma = bicreg(x, y, strict=FALSE, OR=20)
 summary(bma)
 ```

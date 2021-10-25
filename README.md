@@ -7,7 +7,7 @@ This repository holds all related analysis of the results provided in the paper 
 The repository has one single `master` branch with the following files:
 
 - `README.md`: Introduction file.
-- `newPS.csv`: Information at the individual level of all 147 patients whose data is included in this research.
+- `newPS.csv`: Information at the individual level of all 148 patients whose data is included in this research.
 - `dataanalysis-PT-ICUpatients.Rmd`: The RMarkdown file that contains all the code used for the analysis of the daatset above.
 - `dataanalysis-PT-ICUpatients.pdf`: The PDF file generated from RMarkdown, containing all results generated from the code chunk. The file is compiled using [MacTeX](http://www.tug.org/mactex/).
 

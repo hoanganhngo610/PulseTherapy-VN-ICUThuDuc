@@ -19,8 +19,8 @@ If this work has been useful for your research and you would like to cite it in 
 @unpublished{2021pt-vn-icuthuduc,
       title={High dose Methylprednisolone pulse therapy as a treatment for 
              severe COVID-19 patients: results from a prospective observational study},
-      author={Nghia Thinh Bui and Hoang Anh Ngo and Minh Nhat Huynh 
-              and Nguyen Huy Do Tran and Thu-Anh Nguyen},
+      author={Thinh N. Bui and Hoang-Anh Ngo and Nhat M. Huynh 
+              and Nguyen-Huy Do-Tran and Lac Duy Le and Thu-Anh Nguyen},
       year={2021},
       month={10}
 }

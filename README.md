@@ -13,16 +13,17 @@ The repository has one single `master` branch with the following files:
 
 # Citation
 
-If this work has been useful for your research and you would like to cite it in an scientific publication, please refer to this repository and/or its associated Letter as:
+If this work has been useful for your research and you would like to cite it in an scientific publication, please refer to the associated publication of this repository, named **High-dose methylprednisolone pulse therapy for the treatment of patients with severe COVID-19: Results from a prospective observational study**, publish at the Journal of Intensive Medicine:
 
 ```bibtex
-@unpublished{2021pt-vn-icuthuduc,
-      title={High dose Methylprednisolone pulse therapy as a treatment for 
-             severe COVID-19 patients: results from a prospective observational study},
-      author={Thinh N. Bui and Hoang-Anh Ngo and Nhat M. Huynh 
-              and Nguyen-Huy Do-Tran and Lac Duy Le and Thu-Anh Nguyen},
-      year={2021},
-      month={10}
+@article{BUI2022,
+      title = {High-dose methylprednisolone pulse therapy for the treatment of patients with severe COVID-19: Results from a prospective observational study},
+      journal = {Journal of Intensive Medicine},
+      year = {2022},
+      issn = {2667-100X},
+      doi = {https://doi.org/10.1016/j.jointm.2022.04.001},
+      url = {https://www.sciencedirect.com/science/article/pii/S2667100X2200041X},
+      author = {Thinh N. Bui and Hoang-Anh Ngo and Nhat M. Huynh and Nguyen-Huy Do-Tran and Lac Duy Le and Thu-Anh Nguyen}
 }
 ```
 
